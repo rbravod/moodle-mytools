@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -e
+
+ENV_NAME="$1"
+shift
+
+# Base paths.
+BASE_DIR="/home/roberto/workspace"
+DOCKER_DIR="$BASE_DIR/moodle-docker"
+
+# Default values.
+COMPOSE_PROJECT_NAME=""
+MOODLE_DOCKER_WWWROOT=""
+MOODLE_DOCKER_WWW_PORT=""
+MOODLE_DOCKER_DB="pgsql"
+MOODLE_DOCKER_WEB_HOST=""
+
+# Environment switch.
+case "$ENV_NAME" in
+  stable)
+    COMPOSE_PROJECT_NAME="stable"
+    MOODLE_DOCKER_WWWROOT="$BASE_DIR/stable"
+    MOODLE_DOCKER_WWW_PORT="8081"
+    MOODLE_DOCKER_DB=pgsql
+    MOODLE_DOCKER_DB_PORT=5432
+    MOODLE_DOCKER_WEB_HOST="localhost"
+    ;;
+
+  dev)
+    COMPOSE_PROJECT_NAME="dev"
+    MOODLE_DOCKER_WWWROOT="$BASE_DIR/dev"
+    MOODLE_DOCKER_WWW_PORT="8082"
+    MOODLE_DOCKER_DB=pgsql
+    MOODLE_DOCKER_DB_PORT=5433
+    MOODLE_DOCKER_WEB_HOST="localhost"
+    ;;
+
+  lts)
+    COMPOSE_PROJECT_NAME="lts"
+    MOODLE_DOCKER_WWWROOT="$BASE_DIR/lts"
+    MOODLE_DOCKER_WWW_PORT="8083"
+    MOODLE_DOCKER_DB=pgsql
+    MOODLE_DOCKER_DB_PORT=5434
+    MOODLE_DOCKER_WEB_HOST="localhost"
+    ;;
+
+  *)
+    echo "Usage: $0 {stable|dev|lts} <docker-compose args>"
+    exit 1
+    ;;
+esac
+
+# Execute moodle-docker-compose with env.
+COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME" \
+MOODLE_DOCKER_WWWROOT="$MOODLE_DOCKER_WWWROOT" \
+MOODLE_DOCKER_WWW_PORT="$MOODLE_DOCKER_WWW_PORT" \
+MOODLE_DOCKER_DB="$MOODLE_DOCKER_DB" \
+MOODLE_DOCKER_DB_PORT="$MOODLE_DOCKER_DB_PORT" \
+MOODLE_DOCKER_WEB_HOST="$MOODLE_DOCKER_WEB_HOST" \
+"$DOCKER_DIR/bin/moodle-docker-compose" "$@"
